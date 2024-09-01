@@ -1,0 +1,40 @@
+version: '3.9'
+
+services:
+
+  postgres:
+    image: ${POSTGRES_IMAGE}
+    container_name: ${POSTGRES_CONTAINER_NAME}
+    hostname: ${POSTGRES_HOSTNAME}
+    build:
+      context: ${POSTGRES_CONTEXT}
+      dockerfile: ${POSTGRES_DOCKERFILE}
+    restart: always
+    ports:
+      - ${POSTGRES_PORT_HOST}:${POSTGRES_PORT_CONTAINER}
+    volumes:
+      - fluentbit-postgres-volume:${POSTGRES_DATA_PATH}
+    networks:
+      - fluentbit-master-network
+
+  fluentbit:
+    image: ${FLUENTBIT_IMAGE}
+    container_name: ${FLUENTBIT_CONTAINER_NAME}
+    hostname: ${FLUENTBIT_HOSTNAME}
+    build:
+      context: ${FLUENTBIT_CONTEXT}
+      dockerfile: ${FLUENTBIT_DOCKERFILE}
+    restart: always
+    ports:
+      - ${FLUENTBIT_IP_PORT_HOST}:${FLUENTBIT_IP_PORT_CONTAINER}
+    networks:
+      - fluentbit-master-network
+    depends_on:
+      - postgres
+
+
+volumes:
+  fluentbit-postgres-volume:
+
+networks:
+  fluentbit-master-network:
